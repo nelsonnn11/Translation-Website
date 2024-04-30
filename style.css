@@ -1,9 +1,9 @@
 body {
-    background-image: linear-gradient(to right top, #4facfe, #00f2fe);
+    background-image: linear-gradient(to right top, #18191a, #243e3f);
     background-size: cover;
     background-position: center;
     background-attachment: fixed; /* Fix the background to prevent scrolling */
-    font-family: 'Roboto', sans-serif;
+    font-family: "Lora", serif;
     margin: 0;
     padding: 0;
     height: 100vh;
@@ -73,4 +73,14 @@ body {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     margin: 0 auto;
     display: block; /* Center the element */
+}
+
+#e {
+        width: 100px;
+        height: 100px;
+        border-radius: 20%; /* Circular shape */
+        background-color: #fff; /* White background */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin: 0 auto;
+        display: block; /* Center the element */
 }
