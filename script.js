@@ -1,93 +1,67 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const translations = {
-        en: { 
-            es: 'Hola', fr: 'Bonjour', de: 'Hallo', 
-            es: 'manzana', fr: 'pomme', de: 'apfel',
-            es: 'adonde', fr: 'où', de: 'Wo',
-            es: 'mañana', fr: 'matin', de: 'morgen',
-            es: 'noche', fr: 'nuit', de: 'nacht',
-            es: 'quién', fr: 'qui', de: 'der',
-            es: 'cuando', fr: 'quand', de: 'wann',
-            es: 'porque', fr: 'pourquoi', de: 'warum',
-            es: 'gracias', fr: 'merci', de: 'danke',
-            es: 'adios', fr: 'au revoir', de: 'Tschüss'
-        },
-        es: { 
-            en: 'Hello', fr: 'Bonjour', de: 'Hallo', 
-            en: 'apple', fr: 'pomme', de: 'apfel',
-            en: 'where', fr: 'où', de: 'Wo', 
-            en: 'morning', fr: 'matin', de: 'morgen',
-            en: 'night', fr: 'nuit', de: 'nacht', 
-            en: 'who', fr: 'qui', de: 'der',
-            en: 'when', fr: 'quand', de: 'wann', 
-            en: 'why', fr: 'pourquoi', de: 'warum',
-            en: 'thank you', fr: 'merci', dwhoe: 'danke', 
-            en: 'goodbye', fr: 'au revoir', de: 'Tschüss'
-        },
-        fr: { 
-            en: 'Hello', es: 'Hola', de: 'Hallo', 
-            en: 'apple', es: 'manzana', de: 'apfel',
-            en: 'where', es: 'adonde', de: 'Wo', 
-            en: 'morning', es: 'mañana', de: 'morgen',
-            en: 'night', es: 'noche', de: 'nacht', 
-            en: 'who', es: 'quién', de: 'der',
-            en: 'when', es: 'cuando', de: 'wann', 
-            en: 'why', es: 'porque', de: 'warum',
-            en: 'thank you', es: 'gracias', de: 'danke', 
-            en: 'goodbye', es: 'adios', de: 'Tschüss',
-        },
-        de: { 
-            en: 'Hello', es: 'Hola', fr: 'Bonjour', 
-            en: 'apple', es: 'manzana', fr: 'pomme',
-            en: 'where', es: 'adonde', fr: 'où', 
-            en: 'morning', es: 'mañana', fr: 'matin', 
-            en: 'night', es: 'noche', fr: 'nuit', 
-            en: 'who', es: 'quién', fr: 'qui', 
-            en: 'when', es: 'cuando', fr: 'quand', 
-            en: 'why', es: 'porque', fr: 'pourquoi', 
-            en: 'thank you', es: 'gracias', fr: 'merci', 
-            en: 'goodbye', es: 'adios', fr: 'au revoir', 
-        }
-        // Add more languages and words as needed
-    };
+// URL of the MyMemory Translation API
+const apiUrl = 'https://api.mymemory.translated.net/get';
 
-    console.log('Translations object:', translations);
+// Function to translate text using MyMemory Translation API
+async function translateText(text, sourceLang, targetLang) {
+    try {
+        // Construct the URL with query parameters
+        const response = await fetch(`${apiUrl}?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`);
+        const data = await response.json();
+        
+        // Return the translated text
+        return data.responseData.translatedText;
+    } catch (error) {
+        console.error('Error translating text:', error);
+        return '';
+    }
+}
 
-    const translateBtn = document.getElementById('translateBtn');
-    const wordInput = document.getElementById('wordInput');
-    const languageSelect = document.getElementById('languageSelect');
-    const translationResult = document.getElementById('translationResult');
+// Function to handle the Translate button click
+async function handleTranslate() {
+    // Get the English and Spanish text boxes
+    const englishTextBox = document.getElementById('english-text');
+    const spanishTextBox = document.getElementById('spanish-text');
+    
+    // Determine the current translation direction
+    let sourceLang, targetLang, textToTranslate, outputTextBox;
 
-    translateBtn.addEventListener('click', function () {
-        console.log('Translate button clicked.');
-
-        const word = wordInput.value.trim().toLowerCase();
-        console.log('Input word:', word);
-
-        const fromLanguage = 'en'; // Assuming the input is always in English
-        const toLanguage = languageSelect.value;
-        console.log('From Language:', fromLanguage);
-        console.log('To Language:', toLanguage);
-
-        if (!word) {
-            alert('Please enter a word or phrase.');
-            return;
-        }
-
-        const translatedText = translate(word, fromLanguage, toLanguage);
-        console.log('Translated Text:', translatedText);
-        displayTranslation(translatedText);
-    });
-
-    function translate(word, fromLanguage, toLanguage) {
-        if (translations[fromLanguage] && translations[fromLanguage][toLanguage]) {
-            return translations[fromLanguage][toLanguage];
-        } else {
-            return 'Translation not available';
-        }
+    if (englishTextBox.style.display !== 'none') {
+        // If English is visible, translate English to Spanish
+        sourceLang = 'en';
+        targetLang = 'es';
+        textToTranslate = englishTextBox.value;
+        outputTextBox = spanishTextBox;
+    } else {
+        // If Spanish is visible, translate Spanish to English
+        sourceLang = 'es';
+        targetLang = 'en';
+        textToTranslate = spanishTextBox.value;
+        outputTextBox = englishTextBox;
     }
 
-    function displayTranslation(translation) {
-        translationResult.textContent = translation;
-    }
-});
+    // Perform the translation
+    const translatedText = await translateText(textToTranslate, sourceLang, targetLang);
+    // Display the translated text in the output text box
+    outputTextBox.value = translatedText;
+}
+
+// Function to handle the Switch button click
+function handleSwitch() {
+    // Get the headers and text boxes
+    const englishHeader = document.getElementById('english-header');
+    const spanishHeader = document.getElementById('spanish-header');
+    const englishTextBox = document.getElementById('english-text');
+    const spanishTextBox = document.getElementById('spanish-text');
+    
+    // Swap the header texts
+    [englishHeader.textContent, spanishHeader.textContent] = [spanishHeader.textContent, englishHeader.textContent];
+    
+    // Swap the input box values
+    [englishTextBox.value, spanishTextBox.value] = [spanishTextBox.value, englishTextBox.value];
+    
+    // Optionally, swap the input box display style to hide/show boxes if necessary
+}
+
+// Attach event listeners to the buttons
+document.getElementById('translate-button').addEventListener('click', handleTranslate);
+document.getElementById('switch-button').addEventListener('click', handleSwitch);
